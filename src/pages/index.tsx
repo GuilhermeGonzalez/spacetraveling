@@ -5,6 +5,7 @@ import { FiCalendar, FiUser } from 'react-icons/fi';
 
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+import { useEffect, useState } from 'react';
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
@@ -30,35 +31,71 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [nextPage, setNextPage] = useState('');
+
+  useEffect(() => {
+    setPosts(postsPagination.results);
+    setNextPage(postsPagination.next_page);
+  }, [postsPagination.results, postsPagination.next_page]);
+
+  const carregar = (): void => {
+    fetch(nextPage)
+      .then(res => res.json())
+      .then(data => {
+        const dataFormatted = data.results.map(post => {
+          return {
+            uid: post.uid,
+            first_publication_date: post.first_publication_date,
+            data: {
+              title: post.data.title,
+              subtitle: post.data.subtitle,
+              author: post.data.author,
+            },
+          };
+        });
+        setPosts([...posts, ...dataFormatted]);
+        setNextPage(data.next_page);
+      });
+  };
+
   return (
-    <main>
-      <div>
-        {postsPagination.results.map(post => (
-          <Link key={post.uid} href={`/posts/${post.uid}`}>
-            <a>
-              <strong>{post.data.title}</strong>
-              <p>{post.data.subtitle}</p>
-              <div>
-                <time>
-                  <FiCalendar />{' '}
-                  {format(
-                    Date.parse(post.first_publication_date),
-                    'd MMM de yyyy',
-                    {
-                      locale: ptBR,
-                    }
-                  )}
-                </time>
-                <p>
-                  <FiUser /> {post.data.author}
-                </p>
-              </div>
-            </a>
-          </Link>
-        ))}
-      </div>
-      {postsPagination.next_page && <div>Carregar mais posts</div>}
-    </main>
+    <div className={styles.container}>
+      <main className={commonStyles.content}>
+        <section className={styles.posts}>
+          {posts.map(post => (
+            <Link href={`/post/${post.uid}`} key={post.uid}>
+              <a>
+                <h2>{post.data.title}</h2>
+                <p>{post.data.subtitle}</p>
+                <div>
+                  <span>
+                    <FiCalendar size={20} color="#BBBBBB" />
+                    {format(
+                      new Date(post.first_publication_date),
+                      'dd MMM yyyy',
+                      {
+                        locale: ptBR,
+                      }
+                    )}
+                  </span>
+
+                  <span>
+                    <FiUser size={20} color="#BBBBBB" />
+                    {post.data.author}
+                  </span>
+                </div>
+              </a>
+            </Link>
+          ))}
+        </section>
+        {nextPage && (
+          <button type="button" onClick={carregar}>
+            Carregar mais posts
+          </button>
+        )}
+      </main>
+    </div>
   );
 }
 
@@ -75,7 +112,7 @@ export const getStaticProps: GetStaticProps = async () => {
         'pos.banner',
         'pos.content',
       ],
-      pageSize: 100,
+      pageSize: 1,
     }
   );
 
@@ -90,10 +127,12 @@ export const getStaticProps: GetStaticProps = async () => {
       },
     };
   });
-
   return {
     props: {
-      posts,
+      postsPagination: {
+        next_page: postsResponse.next_page,
+        results: posts,
+      },
     },
   };
 };
