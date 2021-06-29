@@ -10,6 +10,7 @@ import Prismic from '@prismicio/client';
 
 import Header from '../../components/Header';
 import Comments from '../../components/Comments';
+import PreviewButton from '../../components/PreviewButton';
 
 import { getPrismicClient } from '../../services/prismic';
 
@@ -43,12 +44,14 @@ interface NeighborhoodPost {
 
 interface PostProps {
   post: Post;
+  preview: boolean;
   nextPost: NeighborhoodPost;
   previousPost: NeighborhoodPost;
 }
 
 export default function Post({
   post,
+  preview,
   nextPost,
   previousPost,
 }: PostProps): JSX.Element {
@@ -155,6 +158,8 @@ export default function Post({
         </aside>
 
         <Comments />
+
+        {preview && <PreviewButton />}
       </main>
     </>
   );
@@ -191,30 +196,33 @@ function verifyNeighborhoodPost(post, slug): NeighborhoodPost | null {
     };
 }
 
-export const getStaticProps: GetStaticProps<PostProps> = async ({ params }) => {
+export const getStaticProps: GetStaticProps<PostProps> = async ({
+  params,
+  preview = false,
+}) => {
   const { slug } = params;
 
   const prismic = getPrismicClient();
 
   const response = await prismic.getByUID('pos', String(slug), {});
 
-  const nextPost = verifyNeighborhoodPost(
-    await prismic.query(Prismic.Predicates.at('document.type', 'pos'), {
-      pageSize: 1,
-      after: slug,
-      orderings: '[document.first_publication_date]',
-    }),
-    slug
-  );
-
-  const previousPost = verifyNeighborhoodPost(
-    await prismic.query(Prismic.Predicates.at('document.type', 'pos'), {
+  const responsePreviousPost = await prismic.query(
+    Prismic.Predicates.at('document.type', 'pos'),
+    {
       pageSize: 1,
       after: slug,
       orderings: '[document.first_publication_date desc]',
-    }),
-    slug
+    }
   );
+
+  const responseNextPost = await prismic.query(
+    Prismic.Predicates.at('document.type', 'pos'),
+    { pageSize: 1, after: slug, orderings: '[document.first_publication_date]' }
+  );
+
+  const nextPost = verifyNeighborhoodPost(responseNextPost, slug);
+
+  const previousPost = verifyNeighborhoodPost(responsePreviousPost, slug);
 
   const post: Post = {
     uid: response.uid,
@@ -232,6 +240,7 @@ export const getStaticProps: GetStaticProps<PostProps> = async ({ params }) => {
   return {
     props: {
       post,
+      preview,
       nextPost,
       previousPost,
     },
