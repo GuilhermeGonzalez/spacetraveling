@@ -1,14 +1,14 @@
 <img width="100%"  src="./docs/Background.png" alt="Background ignite">
 <div align="center">
   <h1>:rocket: SpaceTraveling  </h1>
-  <h2>Desafio Ignite Trilha React</h2>
-  <p align="left">Desafio proposto na trilha de React do Ignite da Rocketseat, neste desafio foi solicitado que desenvolvessemos do zero uma aplicação seguindo o contéudo que nos foi passado no capitulo 3.</p>
-  <p align="left">As funcionalidades desenvolvidas foram, área para comentários, navegação entre posts, informação se o post foi atualizado após sua criação e um sistema de preview dos posts onde o criador de conteúdo pode verificar como ficará o post na página da aplicação antes de publicá-lo.</p>
+  <h2>Ignite React Track Challenge</h2>
+  <p align="left">Challenge proposed in the React track of Rocketseat's Ignite. In this challenge, we were asked to develop an application from scratch following the content provided to us in chapter 3.</p>
+  <p align="left">The functionalities developed were: comments section, navigation between posts, information on whether the post was updated after its creation, and a post preview system where the content creator can see how the post will look on the application's page before publishing it.</p>
 </div>
 
 <hr/>
 
-## Tecnologias
+## Technologies
 
 - [TypeScript](https://www.typescriptlang.org/)
 - [Next.js](https://nextjs.org/)
@@ -20,12 +20,12 @@
 - [react-icons](https://react-icons.github.io/react-icons/)
 - [Utterances](https://utteranc.es/)
 
-## Atividades propostas
+## Proposed Activities
 
-- [x] Comentários com Utteranc;
-- [x] Preview do documento Prismic;
-- [x] Navegação entre post anterior e próximo;
-- [x] Informação de edição do post.
+- [x] Comments with Utteranc;
+- [x] Prismic document preview;
+- [x] Navigation between previous and next posts;
+- [x] Information about post edition.
 
 <img width="100%"  src="./docs/Capa.png" alt="logo">
 
@@ -33,4 +33,4 @@
 
 ## Giving feedback
 
-Feedback é sempre bem-vindo, se você tiver qualquer sugestão ou duvida por favor me enviar um e-mail: gcgonzalez99@hotmail.com
+Feedback is always welcome, if you have any suggestions or questions please send me an email: gcgonzalez99@hotmail.com
